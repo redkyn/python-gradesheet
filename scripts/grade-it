@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+# -*- mode: python -*-
+
+import argparse
+import logging
+import pytest
+import os
+
+logger = logging.getLogger("grade-it")
+
+parser = argparse.ArgumentParser(description='Grade a Python assignment.')
+parser.add_argument('dir', help='The path to the unpacked student submission')
+
+
+def run(unpack_dir):
+    os.chdir(unpack_dir)
+
+    try:
+        code_dir, = os.listdir()
+    except ValueError:
+        logger.critical(
+            "There is not exactly one directory in here... {}\n"
+            "I don't know how to proceed. Abort!".format(os.listdir())
+        )
+
+    os.chdir(code_dir)
+
+    logger.info("Time to start the tests.")
+    pytest.main()
+
+
+if __name__ == '__main__':
+    args = parser.parse_args()
+    logging.basicConfig(level=logging.INFO)
+    run(args.dir)
